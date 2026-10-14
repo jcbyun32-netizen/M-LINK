@@ -93,6 +93,15 @@ h1{font-size:1.25rem;font-weight:800;margin:0 0 .25rem}
 .dlg div{display:flex;gap:.5rem}
 .dlg button{flex:1;height:3rem;border-radius:.75rem;font-weight:700;background:var(--soft)}
 .dlg button.p{background:var(--brand);color:#fff}
+.sth .sub{margin-bottom:1.25rem}
+@media (min-aspect-ratio:5/4){
+  .stf{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);column-gap:1.75rem;align-items:center;padding:1.75rem}
+  .stf .sth{padding-right:1.75rem;border-right:2px solid var(--soft)}
+  .stf .sth .sub{margin-bottom:0}
+  .rv{display:grid;grid-template-columns:minmax(0,20rem) minmax(0,1fr);grid-template-areas:"sum thb" "rb thb";grid-template-rows:auto 1fr;column-gap:.75rem;align-items:start}
+  .rv>.sum{grid-area:sum}.rv>.thb{grid-area:thb}.rv>.rb{grid-area:rb}
+  .thumbs{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
 </style>
 </head>
 <body>
@@ -152,9 +161,10 @@ function render(){
 function renderStart(){
   const resume=S.photos.length>0&&S.rest.trim();
   $('app').innerHTML=`
-  <section class="card">
-    <h1>M-LINK OQC 추가사진 촬영</h1>
-    <p class="sub">검사자와 시리얼 넘버를 입력하고 사진촬영을 시작하세요.</p>
+  <section class="card stf">
+    <div class="sth"><h1>M-LINK OQC 추가사진 촬영</h1>
+    <p class="sub">검사자와 시리얼 넘버를 입력하고 사진촬영을 시작하세요.</p></div>
+    <div class="stform">
     <label class="lb" for="insp">검사자 이름</label>
     <input id="insp" class="in" style="margin-bottom:1.25rem" type="text" autocomplete="name" placeholder="예: 홍길동" value="${esc(S.inspector)}" oninput="S.inspector=this.value;safeSet(NAME_KEY,this.value);save()">
     <label class="lb" for="rest">시리얼 번호 (LEG 뒤 숫자)</label>
@@ -164,6 +174,7 @@ function renderStart(){
     </div>
     <button class="big" onclick="startInspect()">사진촬영 시작</button>
     <p id="err" class="err" style="display:none"></p>
+    </div>
   </section>
   ${resume?`<section class="card">
     <div style="font-weight:700;margin-bottom:.25rem">진행 중인 검사가 있습니다</div>
@@ -277,18 +288,20 @@ function finish(){
 function renderReview(){
   const n=S.photos.length;
   $('app').innerHTML=`
-  <section class="card">
+  <div class="rv">
+  <section class="card sum">
     <div class="meta">시리얼 넘버</div>
     <div class="serial">${esc(serial())}</div>
     <div class="meta" style="margin-top:.4rem">검사자 ${esc(S.inspector)} · M-LINK OQC 추가사진 촬영</div>
     <div class="ok" style="margin-top:.5rem">사진 ${n}장 촬영 완료</div>
   </section>
-  <section class="card"><div class="thumbs">
+  <section class="card thb"><div class="thumbs">
     ${items().map(p=>`<div class="th"><img src="${p.data}" alt=""><p><b>#${p.label}</b> ${esc(p.comment||'')}</p></div>`).join('')}
   </div></section>
-  <div style="display:grid;gap:.5rem">
+  <div class="rb" style="display:grid;gap:.5rem">
     <button class="big" onclick="downloadXlsx()">엑셀(.xlsx) 저장</button>
     <button class="mid" onclick="S.screen='shoot';save();render();window.scrollTo(0,0)">사진 / 코멘트 수정</button>
+  </div>
   </div>`;
 }
 async function resetAll(){
